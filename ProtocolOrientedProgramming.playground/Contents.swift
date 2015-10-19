@@ -28,62 +28,64 @@ Create the following Vehicles types: Car, Bus, ContainerShip, Boat, Motorcycle
 The solution below does not use protocols, it relies solely on subclassing. Can you use protocols to improve the solution?
 **/
 
+
+
 typealias KilometersPerHour = Double
 typealias Kilometers = Double
 typealias Hours = Double
 
-class Vehicle {
-  
-  var speed: KilometersPerHour = 0
-  
-  func travelDuration(distance: Kilometers) -> Hours {
-    return distance / speed
-  }
-  
+protocol Moveable {
+    var speed: KilometersPerHour { get set }
+}
+protocol Vehicle {
+    var wheels: Int { get set }
+}
+protocol Enclosed {
+    var amountOfWindows: Int { get set }
+}
+protocol Vessel {
+    var length: Int { get set }
 }
 
-class GroundVehicle: Vehicle {
-  
-  var wheels: Int = 0
-  
+extension Moveable {
+    func travelDuration(distance: Kilometers) -> Hours {
+        return distance / speed
+    }
 }
 
-class Car: GroundVehicle {
-  
-  var amountOfWindows: Int = 0
-  
+
+struct Car: Moveable, Vehicle, Enclosed {
+    var speed: KilometersPerHour = 0
+    var amountOfWindows: Int = 0
+    var wheels: Int = 4
 }
 
-class MotorCycle: GroundVehicle {
+struct MotorCycle: Moveable, Vehicle {
+    var speed: KilometersPerHour = 0
+    var wheels: Int = 2
+}
+struct Bus: Moveable, Vehicle, Enclosed {
+    var speed: KilometersPerHour = 0
+    var capacity: Int = 0
+    var amountOfWindows: Int = 0
+    var wheels: Int = 4
+}
+struct Boat: Moveable, Vessel, Enclosed {
+    var speed: KilometersPerHour = 0
+    var length: Int = 0
+    var amountOfWindows: Int = 0
   
 }
-
-class Bus: GroundVehicle {
-  
-  var capacity: Int = 0
-  var amountOfWindows: Int = 0
-
+struct ContainerShip: Moveable, Vessel {
+    var speed: KilometersPerHour = 0
+    var length: Int = 0
 }
 
-class Vessel: Vehicle {
-  
-  var length: Int = 0
-  
-}
-
-class Boat: Vessel {
-  
-  var amountOfWindows: Int = 0
-  
-}
-
-class ContainerShip: Vessel {
-  
-}
 
 var car = Car()
 car.amountOfWindows = 6
 car.speed = 120
+print(car.wheels)
 
 var bus = Bus()
 bus.amountOfWindows = 20
@@ -99,19 +101,18 @@ containerShip.speed = 30
 var motorcycle = MotorCycle()
 motorcycle.speed = 130
 
-let vehicles = [car, bus, boat, containerShip, motorcycle]
+let vehicles: [Moveable] = [car, bus, boat, containerShip, motorcycle]
 
 for v in vehicles {
-  var amountOfWindowsSubstring = ""
-  
-  if let boat = v as? Boat {
-      amountOfWindowsSubstring = " has \(boat.amountOfWindows) windows and"
-  } else if let car = v as? Car {
-      amountOfWindowsSubstring = " has \(car.amountOfWindows) windows and"
-  } else if let bus = v as? Bus {
-    amountOfWindowsSubstring = " has \(bus.amountOfWindows) windows and"
-  }
+    var amountOfWindowsSubstring = ""
 
-  
-  print("\(v.dynamicType)\(amountOfWindowsSubstring) needs \(v.travelDuration(100)) to travel 100 kilometers.")
+    if let boat = v as? Boat {
+        amountOfWindowsSubstring = "\(boat.dynamicType) has \(boat.amountOfWindows) windows and"
+    } else if let car = v as? Car {
+        amountOfWindowsSubstring = "\(car.dynamicType) has \(car.amountOfWindows) windows and"
+    } else if let bus = v as? Bus {
+        amountOfWindowsSubstring = "\(bus.dynamicType) has \(bus.amountOfWindows) windows and"
+    }
+
+    print("\(v.dynamicType)\(amountOfWindowsSubstring) needs \(v.travelDuration(100)) to travel 100 kilometers.")
 }
